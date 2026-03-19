@@ -11,6 +11,7 @@ import torchvision.transforms.functional as F
 CLASS_NAMES = {0:"__background__",1:"apple",2:"orange",3:"pear",4:"watermelon",5:"korean_melon",6:"lemon",7:"grape",8:"pineapple",9:"cantaloupe",10:"dragon_fruit",11:"durian"}
 NUM_CLASSES = 12
 CONFIDENCE_THRESHOLD = 0.5
+MAX_SIZE = 640
 
 app = FastAPI(title="Fruit Object Detection API", version="1.0.0")
 
@@ -29,6 +30,13 @@ try:
 except Exception as e:
     print(f"Warning: Could not load model weights: {e}")
     model = None
+
+def resize_image(image, max_size=MAX_SIZE):
+    w, h = image.size
+    if max(w, h) > max_size:
+        scale = max_size / max(w, h)
+        image = image.resize((int(w*scale), int(h*scale)), Image.LANCZOS)
+    return image
 
 @app.get("/", response_class=HTMLResponse)
 def root():
@@ -49,6 +57,9 @@ async def predict(file: UploadFile = File(...)):
     try:
         image_bytes = await file.read()
         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        original_w, original_h = image.size
+        image = resize_image(image)
+        resized_w, resized_h = image.size
     except Exception:
         raise HTTPException(status_code=400, detail="Could not read image.")
     image_tensor = F.to_tensor(image)
@@ -58,9 +69,11 @@ async def predict(file: UploadFile = File(...)):
     boxes = pred["boxes"].tolist()
     labels = pred["labels"].tolist()
     scores = pred["scores"].tolist()
+    scale_x = original_w / resized_w
+    scale_y = original_h / resized_h
     detections = []
     for box, label, score in zip(boxes, labels, scores):
         if score >= CONFIDENCE_THRESHOLD:
-            detections.append({"label":CLASS_NAMES.get(label,"unknown"),"confidence":round(score,4),"box":{"xmin":round(box[0],1),"ymin":round(box[1],1),"xmax":round(box[2],1),"ymax":round(box[3],1)}})
+            detections.append({"label":CLASS_NAMES.get(label,"unknown"),"confidence":round(score,4),"box":{"xmin":round(box[0]*scale_x,1),"ymin":round(box[1]*scale_y,1),"xmax":round(box[2]*scale_x,1),"ymax":round(box[3]*scale_y,1)}})
     detections.sort(key=lambda x: x["confidence"], reverse=True)
-    return JSONResponse(content={"filename":file.filename,"image_size":{"width":image.width,"height":image.height},"detections_count":len(detections),"detections":detections})
+    return JSONResponse(content={"filename":file.filename,"image_size":{"width":original_w,"height":original_h},"detections_count":len(detections),"detections":detections})
