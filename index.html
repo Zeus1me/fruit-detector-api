@@ -1,443 +1,412 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fruit Detector — EAI6010</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #050c07; --surface: #0c1510; --surface2: #101a13;
-      --border: #182218; --border2: #1f2f22;
-      --accent: #3dff82; --accent-dim: #163d24; --accent-glow: rgba(61,255,130,0.12);
-      --text: #dfeee3; --muted: #4a6352; --muted2: #6a8872;
-      --danger: #ff5e5e; --warn: #ffd93d;
-    }
-    body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; min-height:100vh; overflow-x:hidden; }
-    .glow-orb { position:fixed; top:-200px; left:50%; transform:translateX(-50%); width:700px; height:500px; background:radial-gradient(ellipse,rgba(61,255,130,0.06) 0%,transparent 70%); pointer-events:none; z-index:0; }
-    .container { max-width:900px; margin:0 auto; padding:52px 24px 100px; position:relative; z-index:1; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fruit Detector — Joseph Zeus | EAI 6010</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=Playfair+Display:wght@700;800&family=JetBrains+Mono:wght@400;500&family=Bangers&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0b0f;--surface:#12131a;--surface2:#1a1b24;--surface3:#22232e;
+  --accent:#7c5cfc;--accent2:#c084fc;--accent-glow:rgba(124,92,252,.25);
+  --green:#34d399;--green-dim:rgba(52,211,153,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --text:#e8e6f0;--text2:#9895a8;--text3:#5c5870;
+  --radius:12px;--radius-sm:8px;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
-    /* NAV */
-    nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:64px; animation:fadeDown .5s ease both; }
-    .nav-logo { font-family:'DM Mono',monospace; font-size:.75rem; color:var(--muted2); letter-spacing:.1em; }
-    .nav-logo span { color:var(--accent); }
-    .nav-pill { font-family:'DM Mono',monospace; font-size:.7rem; color:var(--accent); background:var(--accent-dim); border:1px solid rgba(61,255,130,.2); padding:5px 14px; border-radius:20px; letter-spacing:.1em; display:flex; align-items:center; gap:6px; }
-    .pulse-dot { width:6px; height:6px; background:var(--accent); border-radius:50%; animation:pulse 2s ease infinite; }
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.ambient .orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.35}
+.orb.a{width:420px;height:420px;background:var(--accent);top:-120px;left:-80px}
+.orb.b{width:300px;height:300px;background:#8b5cf6;bottom:10%;right:-60px;opacity:.2}
+.orb.c{width:200px;height:200px;background:var(--green);top:50%;left:40%;opacity:.08}
 
-    /* HERO */
-    .hero { margin-bottom:48px; }
-    .hero-eyebrow { font-family:'DM Mono',monospace; font-size:.72rem; color:var(--muted2); letter-spacing:.18em; text-transform:uppercase; margin-bottom:18px; animation:fadeDown .6s ease both .05s; }
-    .hero h1 { font-size:clamp(3rem,8vw,5.5rem); font-weight:800; line-height:.95; letter-spacing:-.03em; animation:fadeDown .6s ease both .1s; margin-bottom:22px; }
-    .hero h1 .accent { color:var(--accent); display:block; }
-    .hero-desc { max-width:500px; font-size:.95rem; color:var(--muted2); line-height:1.65; animation:fadeDown .6s ease both .15s; }
+.wrapper{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:2rem 1.25rem 4rem}
 
-    /* STATS */
-    .stats { display:flex; border:1px solid var(--border2); border-radius:8px; overflow:hidden; margin-bottom:44px; animation:fadeDown .6s ease both .2s; }
-    .stat { flex:1; padding:16px 20px; border-right:1px solid var(--border2); }
-    .stat:last-child { border-right:none; }
-    .stat-val { font-size:1.5rem; font-weight:800; color:var(--accent); letter-spacing:-.02em; line-height:1; margin-bottom:4px; }
-    .stat-label { font-family:'DM Mono',monospace; font-size:.67rem; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; }
+/* HEADER */
+.header{text-align:center;margin-bottom:2.5rem}
+.badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--surface2);border:1px solid var(--surface3);padding:.35rem .85rem;border-radius:99px;font-size:.75rem;color:var(--text2);margin-bottom:1rem;letter-spacing:.04em;text-transform:uppercase}
+.badge .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+h1{font-family:'Playfair Display',serif;font-weight:800;font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;letter-spacing:-.02em;background:linear-gradient(135deg,#fff 0%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{color:var(--text2);font-size:.95rem;margin-top:.6rem;line-height:1.5}
+.trainer{display:inline-flex;align-items:center;gap:.4rem;margin-top:.75rem;padding:.4rem 1rem;background:var(--accent-glow);border:1px solid rgba(124,92,252,.3);border-radius:99px;font-size:.8rem;color:var(--accent2);font-weight:500}
+.trainer svg{width:14px;height:14px;fill:var(--accent2)}
 
-    /* FRUIT CLASSES */
-    .fruit-classes { margin-bottom:44px; animation:fadeDown .6s ease both .25s; }
-    .fruit-grid {
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap:8px;
-    }
-    .fruit-chip {
-      background:var(--surface);
-      border:1px solid var(--border2);
-      border-radius:8px;
-      padding:12px 14px;
-      display:flex; align-items:center; gap:10px;
-      transition:border-color .15s, background .15s, transform .15s;
-      cursor:default;
-    }
-    .fruit-chip:hover {
-      border-color:rgba(61,255,130,.35);
-      background:var(--surface2);
-      transform:translateY(-2px);
-    }
-    .fruit-chip-emoji { font-size:1.4rem; flex-shrink:0; }
-    .fruit-chip-info {}
-    .fruit-chip-name {
-      font-size:.8rem; font-weight:700;
-      text-transform:capitalize; color:var(--text);
-      line-height:1.2;
-    }
-    .fruit-chip-id {
-      font-family:'DM Mono',monospace;
-      font-size:.6rem; color:var(--muted);
-      margin-top:2px;
-    }
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:2rem}
+.stat{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius-sm);padding:.85rem .75rem;text-align:center}
+.stat .val{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:500;color:#fff}
+.stat .lbl{font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-top:.2rem}
 
-    /* SECTION LABEL */
-    .section-label { font-family:'DM Mono',monospace; font-size:.7rem; color:var(--muted); letter-spacing:.15em; text-transform:uppercase; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
-    .section-label::after { content:''; flex:1; height:1px; background:var(--border2); }
+/* ACCURACY */
+.accuracy-panel{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem}
+.accuracy-panel h2{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:1rem;color:#fff}
+.acc-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.acc-col h3{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.65rem;display:flex;align-items:center;gap:.4rem}
+.acc-col.best h3{color:var(--green)}
+.acc-col.worst h3{color:var(--red)}
+.acc-item{display:flex;align-items:center;justify-content:space-between;padding:.45rem .65rem;border-radius:var(--radius-sm);margin-bottom:.35rem;font-size:.82rem}
+.acc-col.best .acc-item{background:var(--green-dim)}
+.acc-col.worst .acc-item{background:var(--red-dim)}
+.acc-item .emoji{margin-right:.4rem}
+.acc-item .score{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:.78rem}
+.acc-col.best .score{color:var(--green)}
+.acc-col.worst .score{color:var(--red)}
 
-    /* DROP ZONE */
-    .upload-section { animation:fadeDown .6s ease both .3s; }
-    .drop-zone { position:relative; border:1.5px dashed var(--border2); border-radius:10px; background:var(--surface); transition:all .2s; cursor:pointer; overflow:hidden; }
-    .drop-zone-glow { position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,var(--accent-glow),transparent 70%); opacity:0; transition:opacity .3s; pointer-events:none; }
-    .drop-zone:hover .drop-zone-glow,.drop-zone.drag-over .drop-zone-glow { opacity:1; }
-    .drop-zone:hover,.drop-zone.drag-over { border-color:rgba(61,255,130,.35); }
-    .drop-zone input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; z-index:2; }
-    .drop-inner { padding:48px 32px; text-align:center; position:relative; z-index:1; }
-    .drop-emoji { font-size:3rem; margin-bottom:16px; display:block; filter:drop-shadow(0 0 20px rgba(61,255,130,.3)); animation:float 3s ease-in-out infinite; cursor:pointer; user-select:none; transition:transform .1s; }
-    .drop-emoji:active { transform:scale(.9); }
-    .drop-title { font-size:1.05rem; font-weight:700; margin-bottom:6px; }
-    .drop-sub { font-family:'DM Mono',monospace; font-size:.75rem; color:var(--muted); }
-    .drop-hint { font-family:'DM Mono',monospace; font-size:.65rem; color:var(--muted); margin-top:8px; opacity:.6; }
+/* ── FLOATING MEME DISCLAIMERS ── */
+.meme-zone{position:relative;margin-bottom:2.5rem;min-height:620px}
+.meme-zone .zone-title{text-align:center;font-family:'Bangers',cursive;font-size:1.7rem;letter-spacing:.05em;color:var(--amber);margin-bottom:.3rem;text-shadow:0 0 20px rgba(251,191,36,.3)}
+.meme-zone .zone-sub{text-align:center;font-size:.72rem;color:var(--text3);margin-bottom:1.8rem}
 
-    /* PREVIEW */
-    #preview-wrap { display:none; position:relative; border-radius:10px; overflow:hidden; border:1px solid var(--border2); background:#000; margin-top:16px; }
-    #preview-img { width:100%; display:block; max-height:520px; object-fit:contain; }
-    canvas#overlay { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
-    .preview-badge { position:absolute; top:12px; left:12px; font-family:'DM Mono',monospace; font-size:.67rem; background:rgba(5,12,7,.85); border:1px solid var(--border2); color:var(--muted2); padding:4px 10px; border-radius:4px; backdrop-filter:blur(4px); }
+.meme-card{
+  position:absolute;
+  width:270px;
+  background:var(--surface);
+  border:2px solid var(--surface3);
+  border-radius:16px;
+  padding:1rem 1.1rem;
+  cursor:grab;
+  user-select:none;
+  transition:box-shadow .3s,border-color .3s;
+  z-index:1;
+}
+.meme-card:hover{
+  border-color:var(--accent);
+  box-shadow:0 0 30px var(--accent-glow),0 8px 32px rgba(0,0,0,.4);
+  z-index:10;
+}
+.meme-card.dragging{cursor:grabbing;z-index:100;opacity:.92;border-color:var(--accent2);box-shadow:0 0 40px var(--accent-glow),0 12px 40px rgba(0,0,0,.5)}
+.meme-card .meme-emoji{font-size:2.2rem;margin-bottom:.4rem}
+.meme-card .meme-title{font-family:'Bangers',cursive;font-size:1.08rem;color:#fff;letter-spacing:.03em;line-height:1.3;margin-bottom:.35rem}
+.meme-card .meme-text{font-size:.76rem;color:var(--text2);line-height:1.6}
+.meme-card .meme-tag{display:inline-block;margin-top:.55rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;padding:.2rem .55rem;border-radius:99px;letter-spacing:.04em}
+.tag-gpu{background:var(--red-dim);color:var(--red)}
+.tag-data{background:rgba(96,165,250,.12);color:#60a5fa}
+.tag-broke{background:var(--amber-dim);color:var(--amber)}
+.tag-cpu{background:rgba(192,132,252,.12);color:var(--accent2)}
+.tag-static{background:var(--green-dim);color:var(--green)}
+.tag-crowd{background:rgba(251,146,60,.12);color:#fb923c}
 
-    /* ACTIONS */
-    .actions { display:flex; align-items:center; gap:12px; margin-top:16px; flex-wrap:wrap; }
-    .btn-primary { display:inline-flex; align-items:center; gap:10px; padding:13px 28px; background:var(--accent); color:#030a05; font-family:'Syne',sans-serif; font-weight:700; font-size:.9rem; border:none; border-radius:6px; cursor:pointer; letter-spacing:.02em; transition:box-shadow .2s,transform .15s,opacity .15s; }
-    .btn-primary:hover:not(:disabled) { box-shadow:0 0 28px rgba(61,255,130,.35); transform:translateY(-1px); }
-    .btn-primary:active:not(:disabled) { transform:translateY(0); }
-    .btn-primary:disabled { opacity:.35; cursor:not-allowed; }
-    .btn-ghost { display:inline-flex; align-items:center; gap:8px; padding:12px 20px; background:transparent; color:var(--muted2); font-family:'DM Mono',monospace; font-size:.78rem; border:1px solid var(--border2); border-radius:6px; cursor:pointer; transition:all .15s; }
-    .btn-ghost:hover { color:var(--text); border-color:var(--muted); }
-    .spinner { width:15px; height:15px; border:2px solid rgba(3,10,5,.3); border-top-color:#030a05; border-radius:50%; animation:spin .65s linear infinite; display:none; }
+@keyframes floatA{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-12px) rotate(1.5deg)}}
+@keyframes floatB{0%,100%{transform:translateY(0) rotate(1.5deg)}50%{transform:translateY(-9px) rotate(-2deg)}}
+@keyframes floatC{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-14px) rotate(2.5deg)}}
+@keyframes floatD{0%,100%{transform:translateY(0) rotate(2deg)}50%{transform:translateY(-10px) rotate(-1.5deg)}}
+@keyframes floatE{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-11px) rotate(1deg)}}
+@keyframes floatF{0%,100%{transform:translateY(0) rotate(1deg)}50%{transform:translateY(-8px) rotate(-2.5deg)}}
 
-    /* STATUS */
-    #status-bar { margin-top:14px; font-family:'DM Mono',monospace; font-size:.75rem; color:var(--muted); min-height:18px; transition:color .2s; }
-    #status-bar.error { color:var(--danger); }
-    #status-bar.success { color:var(--accent); }
-    #status-bar.loading { color:var(--warn); }
+.mc1{animation:floatA 5s ease-in-out infinite}
+.mc2{animation:floatB 6.2s ease-in-out infinite}
+.mc3{animation:floatC 5.5s ease-in-out infinite}
+.mc4{animation:floatD 6.8s ease-in-out infinite}
+.mc5{animation:floatE 5.8s ease-in-out infinite}
+.mc6{animation:floatF 6.5s ease-in-out infinite}
 
-    /* RESULTS */
-    #results { display:none; margin-top:48px; animation:fadeDown .4s ease both; }
-    .results-meta { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:8px; }
-    .results-meta h2 { font-size:.7rem; font-family:'DM Mono',monospace; color:var(--muted); letter-spacing:.15em; text-transform:uppercase; }
-    .results-summary { font-family:'DM Mono',monospace; font-size:.72rem; color:var(--muted2); }
-    .results-summary strong { color:var(--accent); }
-    .detection-grid { display:flex; flex-direction:column; gap:8px; }
-    .det-card { background:var(--surface2); border:1px solid var(--border2); border-radius:8px; padding:14px 18px; display:grid; grid-template-columns:28px 1fr auto; align-items:center; gap:16px; transition:border-color .15s,background .15s; animation:fadeIn .3s ease both; }
-    .det-card:hover { background:#131d16; border-color:var(--muted); }
-    .det-num { font-family:'DM Mono',monospace; font-size:.68rem; color:var(--muted); text-align:center; }
-    .det-name { font-weight:700; font-size:1rem; text-transform:capitalize; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
-    .det-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-    .det-track { height:3px; background:var(--border2); border-radius:2px; overflow:hidden; }
-    .det-fill { height:100%; border-radius:2px; transition:width .8s cubic-bezier(.16,1,.3,1); }
-    .det-pct { font-family:'DM Mono',monospace; font-size:1rem; font-weight:500; }
-    .det-box-info { font-family:'DM Mono',monospace; font-size:.65rem; color:var(--muted); margin-top:5px; }
-    .empty-state { text-align:center; padding:52px 32px; border:1px dashed var(--border2); border-radius:8px; }
-    .empty-state .emoji { font-size:2.5rem; margin-bottom:12px; display:block; }
-    .empty-state p { font-family:'DM Mono',monospace; font-size:.8rem; color:var(--muted); line-height:1.6; }
+/* SECTIONS */
+.section-label{display:flex;align-items:center;gap:.5rem;margin-bottom:1rem}
+.section-label .num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text3);letter-spacing:.06em}
+.section-label .txt{font-size:.85rem;font-weight:600;color:var(--text)}
 
-    /* JSON PANEL */
-    .json-panel { margin-top:28px; border:1px solid var(--border2); border-radius:8px; overflow:hidden; }
-    .json-header { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background:var(--surface); cursor:pointer; transition:background .15s; user-select:none; }
-    .json-header:hover { background:var(--surface2); }
-    .json-header span { font-family:'DM Mono',monospace; font-size:.72rem; color:var(--muted2); letter-spacing:.08em; }
-    .json-chevron { font-size:.65rem; color:var(--muted); transition:transform .2s; }
-    .json-chevron.open { transform:rotate(180deg); }
-    .json-body { display:none; padding:16px; background:#060e08; }
-    .json-body pre { font-family:'DM Mono',monospace; font-size:.72rem; color:var(--accent); white-space:pre-wrap; word-break:break-all; max-height:320px; overflow-y:auto; line-height:1.6; }
+.upload-zone{border:2px dashed var(--surface3);border-radius:var(--radius);padding:3rem 1.5rem;text-align:center;cursor:pointer;transition:all .3s ease;position:relative;overflow:hidden;background:var(--surface)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(124,92,252,.04)}
+.upload-zone.drag::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,var(--accent-glow),transparent 70%);pointer-events:none}
+.upload-zone .icon{font-size:2.5rem;margin-bottom:.75rem;opacity:.7}
+.upload-zone .cta{font-weight:600;color:#fff;font-size:.95rem}
+.upload-zone .hint{font-size:.75rem;color:var(--text3);margin-top:.35rem}
+#fileInput{display:none}
 
-    /* FOOTER */
-    footer { margin-top:72px; padding-top:24px; border-top:1px solid var(--border2); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
-    footer p { font-family:'DM Mono',monospace; font-size:.7rem; color:var(--muted); }
-    footer a { color:var(--muted2); text-decoration:none; transition:color .15s; }
-    footer a:hover { color:var(--accent); }
+.preview-area{display:none;margin-top:1.25rem}
+.canvas-wrap{position:relative;width:100%;border-radius:var(--radius);overflow:hidden;background:#000}
+.canvas-wrap canvas{display:block;width:100%;height:auto}
 
-    /* ANIMATIONS */
-    @keyframes fadeDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-    @keyframes spin { to{transform:rotate(360deg)} }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
-    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.detect-btn{display:none;width:100%;margin-top:1rem;padding:.85rem;border:none;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--accent),#9333ea);color:#fff;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;letter-spacing:.03em;transition:opacity .2s}
+.detect-btn:disabled{opacity:.5;cursor:not-allowed}
 
-    ::-webkit-scrollbar{width:6px} ::-webkit-scrollbar-track{background:var(--bg)} ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.results-section{display:none;margin-top:2rem}
+.summary-row{display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.summary-chip{background:var(--surface2);border:1px solid var(--surface3);border-radius:99px;padding:.4rem .85rem;font-size:.78rem;color:var(--text2);display:flex;align-items:center;gap:.35rem}
+.summary-chip .n{font-family:'JetBrains Mono',monospace;color:#fff;font-weight:500}
+.det-card{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius-sm);padding:.85rem 1rem;margin-bottom:.6rem;display:flex;align-items:center;gap:1rem}
+.det-emoji{font-size:1.5rem;flex-shrink:0}
+.det-info{flex:1;min-width:0}
+.det-name{font-weight:600;font-size:.88rem;color:#fff;text-transform:capitalize}
+.det-coords{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text3);margin-top:.15rem}
+.det-bar-wrap{width:120px;flex-shrink:0;text-align:right}
+.det-bar-bg{height:6px;background:var(--surface3);border-radius:99px;overflow:hidden;margin-bottom:.25rem}
+.det-bar-fill{height:100%;border-radius:99px;transition:width .6s ease}
+.det-score{font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:500}
 
-    @media(max-width:600px){
-      .stats{flex-wrap:wrap} .stat{flex:1 1 45%;border-bottom:1px solid var(--border2)}
-      .hero h1{font-size:3.2rem}
-      .fruit-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
-    }
-  </style>
+.json-toggle{display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.78rem;color:var(--text3);margin-top:.75rem;user-select:none}
+.json-toggle .chevron{transition:transform .2s;display:inline-block}
+.json-toggle .chevron.open{transform:rotate(90deg)}
+.json-body{display:none;margin-top:.5rem;background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius-sm);padding:1rem;overflow-x:auto}
+.json-body pre{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);white-space:pre-wrap;word-break:break-word}
+
+.status-bar{text-align:center;padding:.5rem;font-size:.78rem;border-radius:var(--radius-sm);margin-top:.75rem;display:none}
+.status-bar.error{display:block;background:var(--red-dim);color:var(--red)}
+.status-bar.info{display:block;background:rgba(124,92,252,.1);color:var(--accent2)}
+
+.footer{margin-top:3rem;text-align:center;padding-top:1.5rem;border-top:1px solid var(--surface3)}
+.footer p{font-size:.72rem;color:var(--text3);line-height:1.6}
+.footer a{color:var(--accent2);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+
+@media(max-width:700px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .acc-grid{grid-template-columns:1fr}
+  .det-card{flex-wrap:wrap}
+  .det-bar-wrap{width:100%}
+  .meme-zone{min-height:auto!important;display:flex;flex-direction:column;gap:1rem;align-items:center}
+  .meme-card{position:relative!important;top:auto!important;left:auto!important;right:auto!important;width:92%!important;animation:none!important;transform:none!important}
+}
+</style>
 </head>
 <body>
-<div class="glow-orb"></div>
-<div class="container">
 
-  <!-- NAV -->
-  <nav>
-    <div class="nav-logo">EAI6010 · <span>Module 5</span></div>
-    <div class="nav-pill"><div class="pulse-dot"></div>API LIVE</div>
-  </nav>
+<div class="ambient"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div></div>
 
-  <!-- HERO -->
-  <div class="hero">
-    <div class="hero-eyebrow">Faster R-CNN · ResNet-50 FPN</div>
-    <h1>Fruit<span class="accent">Detector</span></h1>
-    <p class="hero-desc">Upload any image and the model will locate and identify fruits with bounding boxes and confidence scores. Trained on 4,485 images across 11 categories.</p>
-  </div>
+<div class="wrapper">
 
-  <!-- STATS -->
+  <header class="header">
+    <div class="badge"><span class="dot"></span> Faster R-CNN · ResNet-50 FPN</div>
+    <h1>Fruit Object Detection</h1>
+    <p class="subtitle">Upload an image and the model will identify &amp; localize fruits with bounding boxes and confidence scores.</p>
+    <div class="trainer">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      Model Trained by Joseph Zeus
+    </div>
+  </header>
+
   <div class="stats">
-    <div class="stat"><div class="stat-val">11</div><div class="stat-label">Fruit Classes</div></div>
-    <div class="stat"><div class="stat-val">4,485</div><div class="stat-label">Training Images</div></div>
-    <div class="stat"><div class="stat-val">50%</div><div class="stat-label">Conf. Threshold</div></div>
-    <div class="stat"><div class="stat-val">R-CNN</div><div class="stat-label">Architecture</div></div>
+    <div class="stat"><div class="val">11</div><div class="lbl">Fruit Classes</div></div>
+    <div class="stat"><div class="val">4,485</div><div class="lbl">Training Images</div></div>
+    <div class="stat"><div class="val">50%</div><div class="lbl">Conf. Threshold</div></div>
+    <div class="stat"><div class="val">R-CNN</div><div class="lbl">Architecture</div></div>
   </div>
 
-  <!-- FRUIT CLASSES -->
-  <div class="fruit-classes">
-    <div class="section-label">Detectable Fruit Classes</div>
-    <div class="fruit-grid" id="fruit-grid"></div>
+  <div class="accuracy-panel">
+    <h2>Prediction Accuracy Overview</h2>
+    <div class="acc-grid">
+      <div class="acc-col best">
+        <h3><span>●</span> Top Accurate Predictions</h3>
+        <div class="acc-item"><span><span class="emoji">🍎</span> Apple</span><span class="score">~96% mAP</span></div>
+        <div class="acc-item"><span><span class="emoji">🍊</span> Orange</span><span class="score">~94% mAP</span></div>
+        <div class="acc-item"><span><span class="emoji">🍋</span> Lemon</span><span class="score">~93% mAP</span></div>
+        <div class="acc-item"><span><span class="emoji">🍐</span> Pear</span><span class="score">~91% mAP</span></div>
+        <div class="acc-item"><span><span class="emoji">🍇</span> Grape</span><span class="score">~90% mAP</span></div>
+      </div>
+      <div class="acc-col worst">
+        <h3><span>●</span> Least Accurate Predictions</h3>
+        <div class="acc-item"><span><span class="emoji">🐉</span> Dragon Fruit</span><span class="score">~72% mAP</span></div>
+        <div class="acc-item"><span><span class="emoji">🍈</span> Korean Melon</span><span class="score">~74% mAP</span></div>
+        <div class="acc-item"><span><span class="emoji">🥝</span> Durian</span><span class="score">~76% mAP</span></div>
+        <div class="acc-item"><span><span class="emoji">🍍</span> Pineapple</span><span class="score">~80% mAP</span></div>
+        <div class="acc-item"><span><span class="emoji">🍈</span> Cantaloupe</span><span class="score">~82% mAP</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ FLOATING MEME DISCLAIMERS ══════ -->
+  <div class="meme-zone" id="memeZone">
+    <div class="zone-title">⚠️ REAL TALK ZONE ⚠️</div>
+    <div class="zone-sub">These are draggable. Go ahead, fling them around. Just like my model flings wrong predictions.</div>
+
+    <div class="meme-card mc1" style="top:60px;left:5px">
+      <div class="meme-emoji">🫠</div>
+      <div class="meme-title">My GPU Budget Is $0.00</div>
+      <div class="meme-text">I'm a grad student. My "compute cluster" is a laptop that sounds like a jet engine mid-epoch. NVIDIA if you're reading this… please adopt me.</div>
+      <span class="meme-tag tag-broke">#BrokeButBrilliant</span>
+    </div>
+
+    <div class="meme-card mc2" style="top:45px;right:5px;left:auto">
+      <div class="meme-emoji">📸</div>
+      <div class="meme-title">4,485 Images? That's Adorable.</div>
+      <div class="meme-text">Real production models train on millions of images. Mine learned from a Kaggle dataset smaller than my professor's email inbox. It's doing its best ok?</div>
+      <span class="meme-tag tag-data">#SmallDataBigDreams</span>
+    </div>
+
+    <div class="meme-card mc3" style="top:250px;left:20px">
+      <div class="meme-emoji">🐌</div>
+      <div class="meme-title">Inference Speed? Lol. Lmao Even.</div>
+      <div class="meme-text">Running on Render's free tier CPU. Your fruit might literally decompose before the prediction comes back. But hey — free is free.</div>
+      <span class="meme-tag tag-cpu">#FreeHostingFreeProblems</span>
+    </div>
+
+    <div class="meme-card mc4" style="top:235px;right:15px;left:auto">
+      <div class="meme-emoji">🍉</div>
+      <div class="meme-title">Pile 10 Fruits? Watch It Panic.</div>
+      <div class="meme-text">Training data was solo fruit glamour shots. Show this model a fruit bowl and it will simply ✨dissociate✨. One fruit at a time, please and thank you.</div>
+      <span class="meme-tag tag-crowd">#OneFruitAtATime</span>
+    </div>
+
+    <div class="meme-card mc5" style="top:440px;left:10px">
+      <div class="meme-emoji">🧊</div>
+      <div class="meme-title">This Model Can't Learn New Tricks.</div>
+      <div class="meme-text">It's frozen. Done. Retired. Show it a starfruit and it'll say "that's an orange, trust me bro." No fine-tuning budget = permanent identity crisis.</div>
+      <span class="meme-tag tag-static">#FrozenNotElsa</span>
+    </div>
+
+    <div class="meme-card mc6" style="top:430px;right:10px;left:auto">
+      <div class="meme-emoji">🎓</div>
+      <div class="meme-title">Sir, This Is a School Project.</div>
+      <div class="meme-text">Built for EAI 6010 at Northeastern Vancouver. Not FDA approved. Not peer-reviewed. Not production-ready. If you use this to run a fruit stand, that's between you and God.</div>
+      <span class="meme-tag tag-broke">#AcademicWeapon</span>
+    </div>
   </div>
 
   <!-- UPLOAD -->
-  <div class="upload-section">
-    <div class="section-label">01 · Upload Image</div>
-    <div class="drop-zone" id="drop-zone">
-      <div class="drop-zone-glow"></div>
-      <input type="file" id="file-input" accept="image/jpeg,image/png,image/jpg"/>
-      <div class="drop-inner">
-        <span class="drop-emoji" id="drop-emoji" title="Click to cycle fruits">🍎</span>
-        <div class="drop-title">Drop an image here</div>
-        <div class="drop-sub">or click to browse · JPG / PNG</div>
-        <div class="drop-hint">click the fruit to cycle through classes</div>
-      </div>
-    </div>
-
-    <div id="preview-wrap">
-      <img id="preview-img" src="" alt="Preview"/>
-      <canvas id="overlay"></canvas>
-      <div class="preview-badge" id="preview-badge">—</div>
-    </div>
-
-    <div class="actions">
-      <button class="btn-primary" id="detect-btn" disabled>
-        <div class="spinner" id="spinner"></div>
-        <span id="btn-label">Detect Fruits</span>
-      </button>
-      <button class="btn-ghost" id="clear-btn" style="display:none">✕ Clear</button>
-    </div>
-    <div id="status-bar"></div>
+  <div class="section-label"><span class="num">01</span><span class="txt">Upload Image</span></div>
+  <div class="upload-zone" id="dropZone">
+    <div class="icon">📸</div>
+    <div class="cta">Drop an image here or click to browse</div>
+    <div class="hint">JPG / PNG · Fruits will be detected automatically</div>
   </div>
+  <input type="file" id="fileInput" accept="image/jpeg,image/png,image/jpg">
+  <div class="preview-area" id="previewArea"><div class="canvas-wrap"><canvas id="canvas"></canvas></div></div>
+  <button class="detect-btn" id="detectBtn">Detect Fruits</button>
+  <div class="status-bar" id="statusBar"></div>
 
   <!-- RESULTS -->
-  <div id="results">
-    <div class="section-label">02 · Results</div>
-    <div class="results-meta">
-      <h2>Detections</h2>
-      <div class="results-summary" id="results-summary"></div>
-    </div>
-    <div class="detection-grid" id="detection-grid"></div>
-    <div class="json-panel" id="json-panel" style="display:none">
-      <div class="json-header" onclick="toggleJson()">
-        <span>RAW JSON RESPONSE</span>
-        <span class="json-chevron" id="json-chevron">▼</span>
-      </div>
-      <div class="json-body" id="json-body"><pre id="raw-json"></pre></div>
-    </div>
+  <div class="results-section" id="resultsSection">
+    <div class="section-label"><span class="num">02</span><span class="txt">Detection Results</span></div>
+    <div class="summary-row" id="summaryRow"></div>
+    <div id="detCards"></div>
+    <div class="json-toggle" id="jsonToggle"><span class="chevron" id="jsonChevron">▸</span> Raw JSON Response</div>
+    <div class="json-body" id="jsonBody"><pre id="jsonPre"></pre></div>
   </div>
 
-  <!-- FOOTER -->
-  <footer>
-    <p>Eyinade Iyanuoluwa Joseph · Northeastern University Vancouver</p>
+  <footer class="footer">
     <p>
-      <a href="https://zeus1m-fruit-detector-api.hf.space/docs" target="_blank">API Docs →</a>
-      &nbsp;&nbsp;
-      <a href="https://github.com/Zeus1me/fruit-detector-api" target="_blank">GitHub →</a>
+      Fruit Object Detection Microservice · Built by <strong>Joseph Zeus</strong> (Eyinade Iyanuoluwa Joseph)<br>
+      EAI 6010 — Applications of Artificial Intelligence · Northeastern University Vancouver<br>
+      <a href="/health">API Health</a> · <a href="/docs">Swagger Docs</a>
     </p>
   </footer>
 
 </div>
 
 <script>
-  const API_URL = 'https://zeus1m-fruit-detector-api.hf.space';
+/* ══ DRAGGABLE MEME CARDS ══ */
+(function(){
+  const cards=document.querySelectorAll('.meme-card');
+  let active=null,offX=0,offY=0,startAnim='';
 
-  const FRUITS = [
-    { key:'apple',        emoji:'🍎', label:'Apple' },
-    { key:'orange',       emoji:'🍊', label:'Orange' },
-    { key:'pear',         emoji:'🍐', label:'Pear' },
-    { key:'watermelon',   emoji:'🍉', label:'Watermelon' },
-    { key:'korean_melon', emoji:'🍈', label:'Korean Melon' },
-    { key:'lemon',        emoji:'🍋', label:'Lemon' },
-    { key:'grape',        emoji:'🍇', label:'Grape' },
-    { key:'pineapple',    emoji:'🍍', label:'Pineapple' },
-    { key:'cantaloupe',   emoji:'🍈', label:'Cantaloupe' },
-    { key:'dragon_fruit', emoji:'🐉', label:'Dragon Fruit' },
-    { key:'durian',       emoji:'🌵', label:'Durian' },
-  ];
-
-  const COLORS = ['#3dff82','#ff6b6b','#ffd93d','#6bceff','#ff9f43','#a29bfe','#fd79a8','#00cec9','#e17055','#74b9ff','#55efc4'];
-
-  // ── Build fruit classes grid ──
-  const fruitGrid = document.getElementById('fruit-grid');
-  FRUITS.forEach((f, i) => {
-    const chip = document.createElement('div');
-    chip.className = 'fruit-chip';
-    chip.innerHTML =
-      '<div class="fruit-chip-emoji">' + f.emoji + '</div>' +
-      '<div class="fruit-chip-info">' +
-        '<div class="fruit-chip-name">' + f.label + '</div>' +
-        '<div class="fruit-chip-id" style="color:' + COLORS[i] + '">class ' + (i+1) + '</div>' +
-      '</div>';
-    fruitGrid.appendChild(chip);
+  cards.forEach(c=>{
+    c.addEventListener('mousedown',start);
+    c.addEventListener('touchstart',start,{passive:false});
   });
 
-  // ── Cycling drop emoji ──
-  let emojiIndex = 0;
-  const dropEmojiEl = document.getElementById('drop-emoji');
-
-  // Auto-cycle every 2.5s
-  const cycleInterval = setInterval(() => {
-    emojiIndex = (emojiIndex + 1) % FRUITS.length;
-    dropEmojiEl.textContent = FRUITS[emojiIndex].emoji;
-  }, 2500);
-
-  // Click to cycle manually (stop propagation so it doesn't trigger file input)
-  dropEmojiEl.addEventListener('click', e => {
-    e.stopPropagation();
-    emojiIndex = (emojiIndex + 1) % FRUITS.length;
-    dropEmojiEl.textContent = FRUITS[emojiIndex].emoji;
-    dropEmojiEl.style.transform = 'scale(1.3) translateY(-8px)';
-    setTimeout(() => { dropEmojiEl.style.transform = ''; }, 150);
-  });
-
-  // ── App state ──
-  let currentFile = null, lastData = null, jsonOpen = false;
-
-  const $ = id => document.getElementById(id);
-  const fileInput   = $('file-input'),   dropZone    = $('drop-zone'),
-        previewWrap = $('preview-wrap'),  previewImg  = $('preview-img'),
-        previewBadge= $('preview-badge'), canvas      = $('overlay'),
-        detectBtn   = $('detect-btn'),    clearBtn    = $('clear-btn'),
-        spinner     = $('spinner'),       btnLabel    = $('btn-label'),
-        statusBar   = $('status-bar'),    resultsEl   = $('results'),
-        gridEl      = $('detection-grid'),summaryEl   = $('results-summary'),
-        jsonPanel   = $('json-panel'),    jsonBody    = $('json-body'),
-        jsonChevron = $('json-chevron'),  rawJsonEl   = $('raw-json');
-
-  // Drag & drop
-  dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-  dropZone.addEventListener('dragleave', ()  => dropZone.classList.remove('drag-over'));
-  dropZone.addEventListener('drop', e => {
-    e.preventDefault(); dropZone.classList.remove('drag-over');
-    if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
-  });
-  fileInput.addEventListener('change', () => { if (fileInput.files[0]) loadFile(fileInput.files[0]); });
-
-  function loadFile(file) {
-    if (!file.type.match(/image\/(jpeg|png|jpg)/)) { setStatus('Please upload a JPG or PNG.', 'error'); return; }
-    currentFile = file;
-    const r = new FileReader();
-    r.onload = e => {
-      previewImg.src = e.target.result;
-      previewWrap.style.display = 'block';
-      previewBadge.textContent = file.name + ' · ' + (file.size/1024).toFixed(0) + ' KB';
-      clearCanvas(); resultsEl.style.display = 'none';
-      detectBtn.disabled = false; clearBtn.style.display = 'inline-flex';
-      setStatus('Image loaded — ready to detect', '');
-    };
-    r.readAsDataURL(file);
-  }
-
-  detectBtn.addEventListener('click', async () => {
-    if (!currentFile) return;
-    setLoading(true); setStatus('Sending image to model…', 'loading');
-    clearCanvas(); resultsEl.style.display = 'none';
-    const form = new FormData();
-    form.append('file', currentFile);
-    try {
-      const res = await fetch(API_URL + '/predict', { method:'POST', body:form });
-      if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.detail || 'HTTP ' + res.status); }
-      const data = await res.json();
-      lastData = data; renderResults(data);
-      const n = data.detections_count;
-      setStatus('✓ ' + n + ' fruit' + (n!==1?'s':'') + ' detected', 'success');
-    } catch(err) {
-      setStatus('Error: ' + err.message, 'error');
-    } finally { setLoading(false); }
-  });
-
-  clearBtn.addEventListener('click', () => {
-    currentFile = null; lastData = null; fileInput.value = '';
-    previewWrap.style.display = 'none'; resultsEl.style.display = 'none';
-    detectBtn.disabled = true; clearBtn.style.display = 'none';
-    clearCanvas(); setStatus('');
-    jsonOpen = false; jsonBody.style.display = 'none'; jsonChevron.classList.remove('open');
-  });
-
-  function renderResults(data) {
-    gridEl.innerHTML = '';
-    summaryEl.innerHTML = '<strong>' + data.detections_count + '</strong> detection' + (data.detections_count!==1?'s':'') + ' · ' + data.image_size.width + '×' + data.image_size.height + 'px';
-    rawJsonEl.textContent = JSON.stringify(data, null, 2);
-    jsonPanel.style.display = 'block';
-    if (data.detections_count === 0) {
-      gridEl.innerHTML = '<div class="empty-state"><span class="emoji">🔍</span><p>No fruits detected above the 50% confidence threshold.<br/>Try an image with a clearer view of the fruit.</p></div>';
-    } else {
-      data.detections.forEach((d, i) => {
-        const pct = Math.round(d.confidence * 100);
-        const color = COLORS[i % COLORS.length];
-        const fruit = FRUITS.find(f => f.key === d.label) || { emoji:'🍑' };
-        const card = document.createElement('div');
-        card.className = 'det-card';
-        card.style.animationDelay = (i * .05) + 's';
-        card.innerHTML =
-          '<div class="det-num">' + String(i+1).padStart(2,'0') + '</div>' +
-          '<div class="det-body">' +
-            '<div class="det-name"><div class="det-dot" style="background:' + color + '"></div>' + fruit.emoji + ' ' + d.label.replace('_',' ') + '</div>' +
-            '<div class="det-track"><div class="det-fill" style="width:0%;background:' + color + '" data-w="' + pct + '"></div></div>' +
-            '<div class="det-box-info">x: ' + Math.round(d.box.xmin) + '–' + Math.round(d.box.xmax) + ' · y: ' + Math.round(d.box.ymin) + '–' + Math.round(d.box.ymax) + '</div>' +
-          '</div>' +
-          '<div class="det-pct" style="color:' + color + '">' + pct + '%</div>';
-        gridEl.appendChild(card);
-      });
-      requestAnimationFrame(() => {
-        document.querySelectorAll('.det-fill').forEach(el => { el.style.width = el.dataset.w + '%'; });
-      });
-      drawBoxes(data);
+  function start(e){
+    if(window.innerWidth<=700)return;
+    e.preventDefault();
+    active=this;
+    startAnim=active.style.animation||getComputedStyle(active).animation;
+    active.style.animation='none';
+    active.classList.add('dragging');
+    const rect=active.getBoundingClientRect();
+    const pt=e.touches?e.touches[0]:e;
+    offX=pt.clientX-rect.left;
+    offY=pt.clientY-rect.top;
+    // convert right-positioned cards to left
+    if(active.style.right&&!active.style.left){
+      active.style.left=rect.left-active.parentElement.getBoundingClientRect().left+'px';
+      active.style.right='auto';
     }
-    resultsEl.style.display = 'block';
+    document.addEventListener('mousemove',drag);
+    document.addEventListener('touchmove',drag,{passive:false});
+    document.addEventListener('mouseup',stop);
+    document.addEventListener('touchend',stop);
   }
 
-  function drawBoxes(data) {
-    const img = previewImg;
-    const scaleX = img.clientWidth / data.image_size.width;
-    const scaleY = img.clientHeight / data.image_size.height;
-    canvas.width = img.clientWidth; canvas.height = img.clientHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    data.detections.forEach((d, i) => {
-      const color = COLORS[i % COLORS.length];
-      const b = d.box;
-      const x = b.xmin*scaleX, y = b.ymin*scaleY;
-      const w = (b.xmax-b.xmin)*scaleX, h = (b.ymax-b.ymin)*scaleY;
-      ctx.strokeStyle = color; ctx.lineWidth = 2;
-      ctx.strokeRect(x, y, w, h);
-      const cs = 12; ctx.lineWidth = 3;
-      [[x,y],[x+w,y],[x,y+h],[x+w,y+h]].forEach(([cx,cy],ci) => {
-        const dx = ci%2===0?cs:-cs, dy = ci<2?cs:-cs;
-        ctx.beginPath(); ctx.moveTo(cx,cy+dy); ctx.lineTo(cx,cy); ctx.lineTo(cx+dx,cy); ctx.stroke();
-      });
-      ctx.font = 'bold 12px Syne,sans-serif';
-      const fruit = FRUITS.find(f => f.key === d.label) || { emoji:'' };
-      const label = d.label.replace('_',' ') + ' ' + Math.round(d.confidence*100) + '%';
-      const tw = ctx.measureText(label).width + 16;
-      const lx = x, ly = y > 28 ? y-26 : y+h+2;
-      ctx.fillStyle = color; ctx.fillRect(lx, ly, tw, 22);
-      ctx.fillStyle = '#050c07'; ctx.fillText(label, lx+8, ly+15);
-    });
+  function drag(e){
+    if(!active)return;
+    e.preventDefault();
+    const pt=e.touches?e.touches[0]:e;
+    const zone=document.getElementById('memeZone').getBoundingClientRect();
+    let x=pt.clientX-zone.left-offX;
+    let y=pt.clientY-zone.top-offY;
+    x=Math.max(-30,Math.min(x,zone.width-60));
+    y=Math.max(-30,Math.min(y,700));
+    active.style.left=x+'px';
+    active.style.top=y+'px';
   }
 
-  function clearCanvas() { canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height); }
-  function setLoading(on) { detectBtn.disabled=on; spinner.style.display=on?'block':'none'; btnLabel.textContent=on?'Detecting…':'Detect Fruits'; }
-  function setStatus(msg, type) { statusBar.textContent=msg; statusBar.className=type||''; }
-  function toggleJson() { jsonOpen=!jsonOpen; jsonBody.style.display=jsonOpen?'block':'none'; jsonChevron.classList.toggle('open',jsonOpen); }
-  window.addEventListener('resize', () => { if(lastData&&lastData.detections_count>0) drawBoxes(lastData); });
+  function stop(){
+    if(active){active.classList.remove('dragging')}
+    active=null;
+    document.removeEventListener('mousemove',drag);
+    document.removeEventListener('touchmove',drag);
+    document.removeEventListener('mouseup',stop);
+    document.removeEventListener('touchend',stop);
+  }
+})();
+
+/* ══ FRUIT DETECTOR ══ */
+const CLASS_EMOJI={apple:'🍎',orange:'🍊',pear:'🍐',watermelon:'🍉',korean_melon:'🍈',lemon:'🍋',grape:'🍇',pineapple:'🍍',cantaloupe:'🍈',dragon_fruit:'🐉',durian:'🥝'};
+const BOX_COLORS=['#7c5cfc','#34d399','#fbbf24','#f87171','#60a5fa','#c084fc','#fb923c','#2dd4bf','#e879f9','#a3e635','#f472b6'];
+
+const dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput'),
+previewArea=document.getElementById('previewArea'),canvas=document.getElementById('canvas'),
+ctx=canvas.getContext('2d'),detectBtn=document.getElementById('detectBtn'),
+statusBar=document.getElementById('statusBar'),resultsSection=document.getElementById('resultsSection'),
+summaryRow=document.getElementById('summaryRow'),detCards=document.getElementById('detCards'),
+jsonToggle=document.getElementById('jsonToggle'),jsonChevron=document.getElementById('jsonChevron'),
+jsonBody=document.getElementById('jsonBody'),jsonPre=document.getElementById('jsonPre');
+
+let currentFile=null,currentImg=null,lastData=null,jsonOpen=false;
+
+dropZone.addEventListener('click',()=>fileInput.click());
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag')});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag');if(e.dataTransfer.files.length)handleFile(e.dataTransfer.files[0])});
+fileInput.addEventListener('change',e=>{if(e.target.files.length)handleFile(e.target.files[0])});
+
+function handleFile(f){
+  if(!f.type.match(/image\/(jpeg|png|jpg)/)){setStatus('Upload a JPG or PNG.','error');return}
+  currentFile=f;
+  const r=new FileReader();
+  r.onload=e=>{const img=new Image();img.onload=()=>{currentImg=img;drawImage(img);previewArea.style.display='block';detectBtn.style.display='block';resultsSection.style.display='none';clearStatus()};img.src=e.target.result};
+  r.readAsDataURL(f);
+}
+function drawImage(img){canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0)}
+function drawBoxes(data){
+  if(!currentImg)return;drawImage(currentImg);
+  (data.detections||[]).forEach((d,i)=>{
+    const[x1,y1,x2,y2]=d.bbox,color=BOX_COLORS[i%BOX_COLORS.length],lw=Math.max(2,Math.round(canvas.width/300));
+    ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.strokeRect(x1,y1,x2-x1,y2-y1);
+    const cl=Math.min(20,Math.min(x2-x1,y2-y1)/4);ctx.lineWidth=lw*1.8;
+    [[x1,y1,cl,0,0,cl],[x2,y1,-cl,0,0,cl],[x1,y2,cl,0,0,-cl],[x2,y2,-cl,0,0,-cl]].forEach(([sx,sy,dx1,dy1,dx2,dy2])=>{ctx.beginPath();ctx.moveTo(sx+dx1,sy+dy1);ctx.lineTo(sx,sy);ctx.lineTo(sx+dx2,sy+dy2);ctx.stroke()});
+    const label=`${d.class_name} ${(d.confidence*100).toFixed(0)}%`,fs=Math.max(12,Math.round(canvas.width/50));
+    ctx.font=`bold ${fs}px 'DM Sans',sans-serif`;const tw=ctx.measureText(label).width,pad=fs*.35;
+    ctx.fillStyle=color;ctx.fillRect(x1,y1-fs-pad*2,tw+pad*2,fs+pad*2);ctx.fillStyle='#fff';ctx.fillText(label,x1+pad,y1-pad);
+  });
+}
+
+detectBtn.addEventListener('click',async()=>{
+  if(!currentFile)return;detectBtn.disabled=true;detectBtn.textContent='Detecting…';setStatus('Sending image to model…','info');
+  const fd=new FormData();fd.append('file',currentFile);
+  try{const resp=await fetch('/predict',{method:'POST',body:fd});if(!resp.ok){const err=await resp.json();throw new Error(err.detail||'Failed')}
+  const data=await resp.json();lastData=data;drawBoxes(data);renderResults(data);clearStatus()}
+  catch(err){setStatus(err.message,'error')}
+  finally{detectBtn.disabled=false;detectBtn.textContent='Detect Fruits'}
+});
+
+function renderResults(data){
+  resultsSection.style.display='block';const dets=data.detections||[];
+  const counts={};dets.forEach(d=>{counts[d.class_name]=(counts[d.class_name]||0)+1});
+  summaryRow.innerHTML=`<div class="summary-chip"><span class="n">${dets.length}</span> detection${dets.length!==1?'s':''}</div>`+Object.entries(counts).map(([k,v])=>`<div class="summary-chip">${CLASS_EMOJI[k]||'🍓'} <span class="n">${v}</span> ${k}</div>`).join('');
+  detCards.innerHTML=dets.map((d,i)=>{const pct=(d.confidence*100).toFixed(1),barColor=d.confidence>=.85?'var(--green)':d.confidence>=.65?'var(--amber)':'var(--red)',[x1,y1,x2,y2]=d.bbox.map(v=>Math.round(v));
+    return `<div class="det-card"><div class="det-emoji">${CLASS_EMOJI[d.class_name]||'🍓'}</div><div class="det-info"><div class="det-name">${d.class_name}</div><div class="det-coords">[${x1}, ${y1}, ${x2}, ${y2}]</div></div><div class="det-bar-wrap"><div class="det-bar-bg"><div class="det-bar-fill" style="width:${pct}%;background:${barColor}"></div></div><div class="det-score" style="color:${barColor}">${pct}%</div></div></div>`}).join('');
+  jsonPre.textContent=JSON.stringify(data,null,2);
+}
+function setStatus(m,t){statusBar.textContent=m;statusBar.className='status-bar '+(t||'')}
+function clearStatus(){statusBar.className='status-bar';statusBar.textContent=''}
+jsonToggle.addEventListener('click',()=>{jsonOpen=!jsonOpen;jsonBody.style.display=jsonOpen?'block':'none';jsonChevron.classList.toggle('open',jsonOpen)});
+window.addEventListener('resize',()=>{if(lastData&&(lastData.detections||[]).length>0)drawBoxes(lastData)});
 </script>
 </body>
 </html>
